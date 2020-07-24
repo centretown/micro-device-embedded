@@ -3,7 +3,7 @@
 
 #include "http_parser.h"  // NOLINT
 
-HttpParser* BuildHttpParser(const String& httpRequest) {
+HttpParser* BuildHttpParser(char* httpRequest) {
   HttpParser* parser = new HttpParser();
   parser->Parse(httpRequest);
   return parser;

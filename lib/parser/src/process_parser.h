@@ -9,7 +9,7 @@
 
 class ProcessParser : public Parser {
  public:
-  ProcessParser() {}
+  ProcessParser() : Parser() {}
   ~ProcessParser() {
     delete[] this->setup_;
     delete[] this->loop_;
@@ -18,14 +18,21 @@ class ProcessParser : public Parser {
   void Parse(const JsonObject& obj) override;
   ActionParser** ParseActions(const JsonArray& arr, size_t len);
 
-  inline String label() { return this->label_; }
-  inline void set_label(String label) { this->label_ = label; }
+  inline char* label() { return this->label_; }
+  inline void set_label(const char* label) {
+    strncpy(this->label_, label, sizeof(this->label_) - 1);
+  }
 
-  inline String deviceKey() { return this->deviceKey_; }
-  inline void set_deviceKey(String deviceKey) { this->deviceKey_ = deviceKey; }
+  inline char* deviceKey() { return this->deviceKey_; }
 
-  inline String purpose() { return this->purpose_; }
-  inline void set_purpose(String purpose) { this->purpose_ = purpose; }
+  inline void set_deviceKey(const char* deviceKey) {
+    strncpy(this->deviceKey_, deviceKey, sizeof(this->deviceKey_) - 1);
+  }
+
+  inline char* purpose() { return this->purpose_; }
+  inline void set_purpose(const char* purpose) {
+    strncpy(this->purpose_, purpose, sizeof(this->purpose_) - 1);
+  }
 
   inline ActionParser** setup() { return this->setup_; }
   inline void set_setup(ActionParser** setup) { this->setup_ = setup; }
@@ -38,9 +45,9 @@ class ProcessParser : public Parser {
   inline void set_loop_length(size_t length) { this->loop_length_ = length; }
 
  private:
-  String label_;
-  String deviceKey_;
-  String purpose_;
+  char label_[32];
+  char deviceKey_[12];
+  char purpose_[128];
   ActionParser** setup_ = NULL;
   size_t setup_length_ = 0;
   ActionParser** loop_ = NULL;

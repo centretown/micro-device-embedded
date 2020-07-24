@@ -11,21 +11,14 @@ class HttpParser : public ErrorHandler {
   HttpParser() {}
   ~HttpParser() {}
 
-  inline const String& path() { return this->path_; }
-  inline void set_path(const String& path) { this->path_ = path; }
-
-  inline const String& version() { return this->version_; }
-  inline void set_version(const String& version) { this->version_ = version; }
-
-  inline const String& method() { return this->method_; }
-  inline void set_method(String method) { this->method_ = method; }
-
-  inline const String& body() { return this->body_; }
-  inline void set_body(String body) { this->body_ = body; }
+  inline const char* path() { return this->path_; }
+  inline const char* version() { return this->version_; }
+  inline const char* method() { return this->method_; }
+  inline char* body() { return this->body_; }
 
   // extracts the path, version, method and body of an http request
-  void Parse(const String& source);
+  void Parse(char* source);
 
  private:
-  String path_, version_, method_, body_;
+  char path_[100], version_[16], method_[8], *body_;
 };

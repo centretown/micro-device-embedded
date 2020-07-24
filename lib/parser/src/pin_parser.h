@@ -8,7 +8,7 @@
 
 class PinParser : public ModeParser {
  public:
-  PinParser() {}
+  PinParser() : ModeParser() {}
   ~PinParser() {}
 
   void Parse(const JsonObject &obj) override;

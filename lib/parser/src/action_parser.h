@@ -3,13 +3,12 @@
 
 #pragma once
 
-#include <ArduinoJson.h>
-
 #include "parser.h"  // NOLINT
+#include "reader.h"  // NOLINT
 
 class ActionParser : public Parser {
  public:
-  ActionParser() {}
+  ActionParser() : Parser() {}
   ~ActionParser() { delete this->parser_; }
 
   // accessors
@@ -17,16 +16,13 @@ class ActionParser : public Parser {
   inline void set_sequence(int sequence) { this->sequence_ = sequence; }
 
   inline char type() { return this->type_; }
-  inline void set_type(String type) { this->type_ = type.charAt(0); }
+  inline void set_type(char type) { this->type_ = tolower(type); }
 
   inline Parser* parser() { return this->parser_; }
   inline void set_parser(Parser* parser) { this->parser_ = parser; }
 
   // command overrides
   void Parse(const JsonObject& obj) override;
-
-  // returns an Action command pointer that acts as a NOP
-  static ActionParser* NoAction();
 
  private:
   int sequence_ = 0;

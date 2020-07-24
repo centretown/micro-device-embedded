@@ -8,7 +8,7 @@
 
 class Parser : public ErrorHandler {
  public:
-  Parser() {}
+  Parser() : ErrorHandler() {}
   virtual ~Parser() {}
   // parse and validate
   virtual void Parse(const JsonObject& obj) = 0;

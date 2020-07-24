@@ -9,7 +9,7 @@
 
 class DelayParser : public Parser {
  public:
-  DelayParser() {}
+  DelayParser() : Parser() {}
   ~DelayParser() {}
 
   // void Exec() override;

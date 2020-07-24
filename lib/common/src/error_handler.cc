@@ -3,19 +3,8 @@
 
 #include "error_handler.h"  // NOLINT
 
-#include <WString.h>
+JsonWriter* ErrorHandler::writer_ = new JsonWriter(256);
 
-// error handling
-void ErrorHandler::AppendError(const String msg) {
-  this->ok_ = false;
-  this->err_.concat(msg);
-  this->err_.concat('\n');
-}
-
-void ErrorHandler::AppendError(const String msg, int num) {
-  String buf(num);
-  this->ok_ = false;
-  this->err_.concat(msg);
-  this->err_.concat(buf);
-  this->err_.concat('\n');
+void ErrorHandler::err(char* buf, size_t len) {
+  this->writer_->ReadAll(buf, len);
 }

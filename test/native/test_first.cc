@@ -3,7 +3,7 @@
 
 #include <unity.h>
 
-#ifdef UNIT_TEST
+// #ifdef UNIT_TEST
 
 void test_test() { TEST_ASSERT_EQUAL(true, true); }
 
@@ -20,4 +20,6 @@ void loop() {
   UNITY_END();  // stop unit testing
 }
 
-#endif  // UNIT_TEST
+int main() {}
+
+// #endif  // UNIT_TEST

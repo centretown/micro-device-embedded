@@ -1,7 +1,7 @@
 // Copyright 2020, Dave Marsh, Centretown
 // All rights reserved. see LICENSE.TXT
 
-#ifndef UNIT_TEST
+#if defined(ARDUINO)
 // Import required libraries
 #include <Arduino.h>
 #include <WiFi.h>
@@ -18,6 +18,10 @@
 WiFiServer server(80);
 
 ProcessRunner* processRunner = NULL;
+
+char readBuffer[1024];
+char errBuffer[1024];
+const char* kOverflow = "Read Buffer overflow";
 
 void ok(WiFiClient client);
 void showPage(WiFiClient client);
@@ -53,10 +57,10 @@ void loop() {
     return;
   }
 
-  String msg;
+  char* msg = NULL;
 
   auto stop = [&client, &msg]() -> void {
-    if (msg.length() > 0) client.println(msg);
+    if (strlen(msg) > 0) client.println(msg);
     client.stop();
   };
 
@@ -66,17 +70,29 @@ void loop() {
 
   Serial.println(client.remoteIP(client.fd()));
 
+  // read request
+  auto bytesRead = client.readBytes(readBuffer, sizeof(readBuffer));
+  if (bytesRead >= sizeof(readBuffer)) {
+    strncpy(errBuffer, kOverflow, sizeof(errBuffer));
+    msg = errBuffer;
+    stop();
+    return;
+  }
+  // null terminate
+  readBuffer[bytesRead] = '\0';
+
   // parse http
-  HttpParser* request = BuildHttpParser(client.readString());
+  HttpParser* request = BuildHttpParser(readBuffer);
   if (request->ok() == false) {
-    msg = request->err();
+    request->err(errBuffer, sizeof(errBuffer));
+    msg = errBuffer;
     stop();
     return;
   }
 
   ProcessParser* parser = BuildProcessParser(request->body());
   if (parser->ok() == false) {
-    msg = parser->err();
+    parser->err(errBuffer, sizeof(errBuffer));
     stop();
     return;
   }
@@ -85,4 +101,6 @@ void loop() {
   processRunner = BuildProcessRunner(parser);
   stop();
 }
-#endif  // UNIT_TEST
+#else
+int main() {}
+#endif  // ARDUNIO

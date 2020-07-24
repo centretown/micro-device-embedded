@@ -6,11 +6,11 @@
 const int maxPins = 16;
 
 void ModeParser::Parse(const JsonObject &obj) {
-  String mode = obj["mode"];
-  if (mode.length() == 0) this->AppendError("Mode missing");
+  const char *mode = obj["mode"];
+  if (strlen(mode) == 0) this->AppendError("Mode missing");
 
-  String signal = obj["signal"];
-  if (signal.length() == 0) this->AppendError("Signal missing");
+  const char *signal = obj["signal"];
+  if (strlen(signal) == 0) this->AppendError("Signal missing");
 
   if (obj["id"].isNull() == true) {
     this->AppendError("Pin id missing");
@@ -24,8 +24,8 @@ void ModeParser::Parse(const JsonObject &obj) {
     return;
   }
 
-  this->set_mode(mode);
-  this->set_signal(signal);
+  this->set_mode(*mode);
+  this->set_signal(*signal);
   this->set_pin(pin);
 
   if (this->signal() != 'd' && this->signal() != 'a')

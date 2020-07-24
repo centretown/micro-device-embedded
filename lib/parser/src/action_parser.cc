@@ -7,34 +7,24 @@
 #include "mode_parser.h"   // NOLINT
 #include "pin_parser.h"    // NOLINT
 
-ActionParser* ActionParser::NoAction() {
-  ActionParser* action = new ActionParser();
-  action->set_sequence(0);
-  action->set_type("delay");
-  DelayParser* parser = new DelayParser();
-  parser->set_duration(0);
-  action->set_parser(parser);
-  return action;
-}
-
 void ActionParser::Parse(const JsonObject& obj) {
   this->set_sequence(obj["sequence"]);
-  String type = (const char*)obj["type"];
-  if (type.length() == 0) {
+  const char* type = obj["type"];
+  if (strlen(type) == 0) {
     this->AppendError("Type is required");
     return;
   }
 
-  set_type(type);
+  set_type(*type);
   Parser* parser = NULL;
   switch (this->type()) {
-    case 'm':  // MODE
+    case 'M':  // MODE
       parser = new ModeParser();
       break;
-    case 'd':  // DELAY
+    case 'D':  // DELAY
       parser = new DelayParser();
       break;
-    case 'p':  // PIN I/O
+    case 'P':  // PIN I/O
       parser = new PinParser();
       break;
     default:
@@ -44,7 +34,7 @@ void ActionParser::Parse(const JsonObject& obj) {
 
   parser->Parse(obj["command"]);
   if (!parser->ok()) {
-    this->AppendError(parser->err());
+    this->AppendError("Command error");
     return;
   }
 
