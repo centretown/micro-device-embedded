@@ -7,6 +7,6 @@
 #include "process_parser.h"  // NOLINT
 #include "process_runner.h"  // NOLINT
 
-HttpParser* BuildHttpParser(char* httpRequest);
-ProcessParser* BuildProcessParser(const char* body);
-ProcessRunner* BuildProcessRunner(ProcessParser* parser);
+HttpParser* BuildHttpParser(char* httpRequest, Writer* writer);
+ProcessParser* BuildProcessParser(const char* body, Writer* writer);
+ProcessRunner* BuildProcessRunner(Process* process);

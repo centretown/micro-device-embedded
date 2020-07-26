@@ -11,6 +11,7 @@
 // must define char *ssid and char *pass)
 #include "builder.h"         // NOLINT
 #include "http_parser.h"     // NOLINT
+#include "json_writer.h"     // NOLINT
 #include "process_parser.h"  // NOLINT
 #include "process_runner.h"  // NOLINT
 
@@ -81,25 +82,26 @@ void loop() {
   // null terminate
   readBuffer[bytesRead] = '\0';
 
+  JsonWriter* writer = new JsonWriter(1024);
+
   // parse http
-  HttpParser* request = BuildHttpParser(readBuffer);
+  HttpParser* request = BuildHttpParser(readBuffer, writer);
   if (request->ok() == false) {
-    request->err(errBuffer, sizeof(errBuffer));
-    msg = errBuffer;
+    msg = request->ReadError(errBuffer, sizeof(errBuffer));
     stop();
     return;
   }
 
-  ProcessParser* parser = BuildProcessParser(request->body());
+  ProcessParser* parser = BuildProcessParser(request->args().body(), writer);
   if (parser->ok() == false) {
-    parser->err(errBuffer, sizeof(errBuffer));
+    parser->ReadError(errBuffer, sizeof(errBuffer));
     stop();
     return;
   }
 
   delete processRunner;
-  processRunner = BuildProcessRunner(parser);
-  stop();
+  auto args = parser->args();
+  processRunner = BuildProcessRunner(&args);
 }
 #else
 int main() {}

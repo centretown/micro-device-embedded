@@ -1,10 +1,8 @@
-// Copyright 2020, Dave Marsh, Centretown
-// All rights reserved. see LICENSE.TXT
+// // Copyright 2020, Dave Marsh, Centretown
+// // All rights reserved. see LICENSE.TXT
 
-#include "error_handler.h"  // NOLINT
+// #include "error_handler.h"  // NOLINT
 
-JsonWriter* ErrorHandler::writer_ = new JsonWriter(256);
-
-void ErrorHandler::err(char* buf, size_t len) {
-  this->writer_->ReadAll(buf, len);
-}
+// const char* ErrorHandler::err(char* buf, size_t len) {
+//   return this->writer_->Read(buf, len);
+// }

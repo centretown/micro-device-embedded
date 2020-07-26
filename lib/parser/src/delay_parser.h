@@ -1,23 +1,19 @@
-// Copyright 2020, Dave Marsh, Centretown
-// All rights reserved. see LICENSE.TXT
+// Copyright 2020 Dave Marsh. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 #pragma once
 
 #include <ArduinoJson.h>
 
-#include "parser.h"  // NOLINT
+#include "delay.h"               // NOLINT
+#include "json_object_parser.h"  // NOLINT
+#include "writer.h"              // NOLINT
 
-class DelayParser : public Parser {
+class DelayParser : public JsonObjectParser<Delay> {
  public:
-  DelayParser() : Parser() {}
+  explicit DelayParser(Writer* writer) : JsonObjectParser(writer) {}
   ~DelayParser() {}
 
-  // void Exec() override;
   void Parse(const JsonObject& obj) override;
-
-  inline auto duration() -> uint32_t { return this->duration_; }
-  inline auto set_duration(uint32_t duration) -> void { duration_ = duration; }
-
- private:
-  uint32_t duration_ = 0;
 };

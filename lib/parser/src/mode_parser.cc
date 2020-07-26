@@ -1,5 +1,6 @@
-// Copyright 2020, Dave Marsh, Centretown
-// All rights reserved. see LICENSE.TXT
+// Copyright 2020 Dave Marsh. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 #include "mode_parser.h"  // NOLINT
 
@@ -7,33 +8,35 @@ const int maxPins = 16;
 
 void ModeParser::Parse(const JsonObject &obj) {
   const char *mode = obj["mode"];
-  if (strlen(mode) == 0) this->AppendError("Mode missing");
+  if (strlen(mode) == 0) this->WriteError("Mode missing");
 
   const char *signal = obj["signal"];
-  if (strlen(signal) == 0) this->AppendError("Signal missing");
+  if (strlen(signal) == 0) this->WriteError("Signal missing");
 
   if (obj["id"].isNull() == true) {
-    this->AppendError("Pin id missing");
+    this->WriteError("Pin id missing");
   }
 
   if (this->ok() == false) return;
 
   uint8_t pin = obj["id"];
   if (pin < 0 || pin >= maxPins) {
-    this->AppendError("Pin id out of range");
+    this->WriteError("Pin id out of range");
     return;
   }
 
-  this->set_mode(*mode);
-  this->set_signal(*signal);
-  this->set_pin(pin);
+  auto args = this->args();
 
-  if (this->signal() != 'd' && this->signal() != 'a')
-    this->AppendError("Signal must be analog or digital");
+  args.set_mode(*mode);
+  args.set_signal(*signal);
+  args.set_pin(pin);
 
-  if (this->mode() != 'o' && this->mode() != 'i')
-    this->AppendError("Mode must input or output");
+  if (args.signal() != 'd' && args.signal() != 'a')
+    this->WriteError("Signal must be analog or digital");
 
-  if (this->mode() == 'o' && this->signal() != 'd')
-    this->AppendError("Output to digital only");
+  if (args.mode() != 'o' && args.mode() != 'i')
+    this->WriteError("Mode must input or output");
+
+  if (args.mode() == 'o' && args.signal() != 'd')
+    this->WriteError("Output to digital only");
 }

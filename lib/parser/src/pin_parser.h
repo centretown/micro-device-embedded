@@ -1,21 +1,27 @@
-// Copyright 2020, Dave Marsh, Centretown
-// All rights reserved. see LICENSE.TXT
+// Copyright 2020 Dave Marsh. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 #pragma once
 #include <ArduinoJson.h>
 
 #include "mode_parser.h"  // NOLINT
+#include "pin.h"          // NOLINT
+#include "writer.h"       // NOLINT
 
-class PinParser : public ModeParser {
+class PinParser : public JsonObjectParser<Pin> {
  public:
-  PinParser() : ModeParser() {}
-  ~PinParser() {}
+  explicit PinParser(Writer* writer) : JsonObjectParser(writer) {
+    mode_parser_ = new ModeParser(writer);
+  }
+  ~PinParser() { delete mode_parser_; }
 
-  void Parse(const JsonObject &obj) override;
+  void Parse(const JsonObject& obj) override;
 
-  inline auto value() -> int { return this->value_; }
-  inline auto set_value(int value) -> void { value_ = value; }
+  inline int value() { return this->value_; }
+  inline void set_value(int value) { value_ = value; }
 
  private:
-  int value_;
+  int value_ = 0;
+  ModeParser* mode_parser_ = NULL;
 };

@@ -12,14 +12,16 @@ class JsonWriter : public Writer {
   explicit JsonWriter(size_t size);
   ~JsonWriter();
 
-  void Write(const char *) override;
+  void WriteData(const char *) override;
   void WriteError(const char *) override;
   void WriteError(const char *, int) override;
   void WriteError(const char *, const char *) override;
-  void ReadAll(char *output, size_t outputSize) override;
+  char *ReadData(char *output, size_t outputSize) override;
+  char *ReadError(char *output, size_t outputSize) override;
 
  private:
   DynamicJsonDocument *doc_ = NULL;
+  JsonObject obj_;
   JsonArray errors_;
   JsonArray data_;
 };

@@ -5,13 +5,14 @@
 
 JsonWriter::JsonWriter(size_t size) : Writer() {
   this->doc_ = new DynamicJsonDocument(size);
+  this->obj_ = this->doc_->createNestedObject();
 }
 
 JsonWriter::~JsonWriter() { delete this->doc_; }
 
-void JsonWriter::Write(const char *message) {
+void JsonWriter::WriteData(const char *message) {
   if (this->data_.isNull()) {
-    this->data_ = this->doc_->createNestedArray("data");
+    this->data_ = this->obj_.createNestedArray("data");
   }
   auto obj = this->data_.createNestedObject();
   obj["message"] = message;
@@ -19,7 +20,7 @@ void JsonWriter::Write(const char *message) {
 
 void JsonWriter::WriteError(const char *message) {
   if (this->errors_.isNull()) {
-    this->errors_ = this->doc_->createNestedArray("errors");
+    this->errors_ = this->obj_.createNestedArray("errors");
   }
   auto obj = this->errors_.createNestedObject();
   obj["message"] = message;
@@ -37,6 +38,18 @@ void JsonWriter::WriteError(const char *prefix, const char *suffix) {
   this->WriteError(buf);
 }
 
-void JsonWriter::ReadAll(char *output, size_t outputSize) {
-  serializeJson(*this->doc_, output, outputSize);
+char *JsonWriter::ReadData(char *output, size_t outputSize) {
+  if (this->data_.isNull())
+    strncpy(output, "no data", outputSize);
+  else
+    serializeJson(this->data_, output, outputSize);
+  return output;
+}
+
+char *JsonWriter::ReadError(char *output, size_t outputSize) {
+  if (this->errors_.isNull())
+    strncpy(output, "no data", outputSize);
+  else
+    serializeJson(this->errors_, output, outputSize);
+  return output;
 }

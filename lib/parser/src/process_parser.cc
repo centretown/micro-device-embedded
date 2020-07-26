@@ -6,34 +6,36 @@
 #include "delay_parser.h"  // NOLINT
 
 void ProcessParser::Parse(const JsonObject& obj) {
+  auto args = this->args();
   // no edit necessary right now
-  this->set_label(obj["label"]);
-  this->set_deviceKey(obj["deviceKey"]);
-  this->set_purpose(obj["purpose"]);
+  args.set_label(obj["label"]);
+  args.set_deviceKey(obj["deviceKey"]);
+  args.set_purpose(obj["purpose"]);
 
   // edit these
-  auto arr = obj["setup"].as<JsonArray>();
-  this->set_setup_length(arr.size());
-  this->set_setup(ParseActions(arr, this->setup_length()));
+  auto setup = obj["setup"].as<JsonArray>();
+  args.set_setup_length(setup.size());
+  args.set_setup(ParseOps(setup, args.setup_length()));
 
-  arr = obj["loop"].as<JsonArray>();
-  this->set_loop_length(arr.size());
-  this->set_loop(ParseActions(arr, this->loop_length()));
+  auto loop = obj["loop"].as<JsonArray>();
+  args.set_loop_length(loop.size());
+  args.set_loop(ParseOps(loop, args.loop_length()));
 }
 
-ActionParser** ProcessParser::ParseActions(const JsonArray& arr,
-                                           size_t length) {
-  ActionParser** actions = NULL;
+Op** ProcessParser::ParseOps(const JsonArray& arr, size_t length) {
+  Op** ops = NULL;
   if (length > 0) {
-    actions = new ActionParser*[length];
+    ActionParser parser(this->writer());
+    ops = new Op*[length];
     for (auto i = 0; i < length; ++i) {
-      ActionParser* action = new ActionParser();
-      action->Parse(arr[i].as<JsonObject>());
-      if (!action->ok()) {
-        this->AppendError("Error parsing action: ", i);
+      parser.clear();
+      parser.Parse(arr[i].as<JsonObject>());
+      if (!parser.ok()) {
+        this->WriteError("Error parsing action: ", i);
+      } else {
+        ops[i] = parser.args().op();
       }
-      actions[i] = action;
     }
   }
-  return actions;
+  return ops;
 }

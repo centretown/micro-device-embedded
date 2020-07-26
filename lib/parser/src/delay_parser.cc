@@ -1,12 +1,13 @@
-// Copyright 2020, Dave Marsh, Centretown
-// All rights reserved. see LICENSE.TXT
+// Copyright 2020 Dave Marsh. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 #include "delay_parser.h"  // NOLINT
 
-void DelayParser::Parse(const JsonObject &obj) {
+void DelayParser::Parse(const JsonObject& obj) {
   if (!obj["duration"]) {
-    this->AppendError("Duration missing");
+    this->WriteError("Duration missing");
     return;
   }
-  this->set_duration(obj["duration"]);
+  this->args().set_duration(obj["duration"]);
 }
