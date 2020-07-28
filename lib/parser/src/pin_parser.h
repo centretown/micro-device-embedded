@@ -19,10 +19,6 @@ class PinParser : public JsonObjectParser<Pin> {
 
   void Parse(const JsonObject& obj) override;
 
-  inline int value() { return this->value_; }
-  inline void set_value(int value) { value_ = value; }
-
  private:
-  int value_ = 0;
   ModeParser* mode_parser_ = NULL;
 };

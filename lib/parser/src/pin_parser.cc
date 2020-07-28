@@ -9,8 +9,9 @@ void PinParser::Parse(const JsonObject& obj) {
   if (this->ok() == false) return;
 
   int value = obj["value"];
-  this->set_value(value);
-  if (this->value() < 0 || this->value() > 1) {
+  auto args = this->args();
+  args->set_value(value);
+  if (args->value() < 0 || args->value() > 1) {
     this->WriteError("Value must be 1 or 0");
   }
 }
