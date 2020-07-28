@@ -5,7 +5,9 @@
 
 #if defined(ARDUINO)
 #include <Arduino.h>
-#endif
+#else
+#include <stdio.h>
+#endif  // ARDUINO
 
 #include "mode.h"         // NOLINT
 #include "mode_parser.h"  // NOLINT
@@ -22,6 +24,12 @@ class ModeRunner : public Runner<Mode> {
       pinMode(args()->pin(), OUTPUT);
     } else {
       pinMode(args()->pin(), INPUT);
+    }
+#else
+    if (args()->mode() == 'o') {
+      printf("pinMode(%d, OUTPUT);\n", args()->pin());
+    } else {
+      printf("pinMode(%d, INPUT);\n", args()->pin());
     }
 #endif  // ARDUINO
   }

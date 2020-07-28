@@ -4,15 +4,14 @@
 
 #pragma once
 #include <ArduinoJson.h>
-
-#include "action_parser.h"       // NOLINT
-#include "json_object_parser.h"  // NOLINT
-#include "process.h"             // NOLINT
-#include "writer.h"              // NOLINT
+#include <json_object_parser.h>
+#include <process.h>
+#include <writer.h>
 
 class ProcessParser : public JsonObjectParser<Process> {
  public:
-  explicit ProcessParser(Writer* writer) : JsonObjectParser(writer) {}
+  explicit ProcessParser(Writer* writer, Process* args)
+      : JsonObjectParser(writer, args) {}
   ~ProcessParser() {}
 
   void Parse(const JsonObject& obj) override;

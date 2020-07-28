@@ -4,9 +4,8 @@
 
 #pragma once
 
+#include <op.h>
 #include <stdlib.h>
-
-#include "op.h"  // NOLINT
 
 class Action {
  public:

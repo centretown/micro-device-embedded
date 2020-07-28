@@ -13,7 +13,7 @@
 
 void ActionParser::Parse(const JsonObject& obj) {
   auto args = this->args();
-  args.set_sequence(obj["sequence"]);
+  args->set_sequence(obj["sequence"]);
   const char* type = obj["type"];
   if (strlen(type) == 0) {
     this->WriteError("Type is required");
@@ -21,42 +21,42 @@ void ActionParser::Parse(const JsonObject& obj) {
   }
 
   JsonObject command = obj["command"];
-  args.set_type(*type);
-  switch (args.type()) {
+  args->set_type(*type);
+  switch (args->type()) {
     case 'M':  // MODE
     {
-      ModeParser parser(this->writer());
+      ModeParser parser(this->writer(), new Mode());
       parser.Parse(command);
       if (parser.ok()) {
         auto modeArgs = parser.args();
-        auto runner = new ModeRunner(&modeArgs);
-        args.set_op(runner);
+        auto runner = new ModeRunner(modeArgs);
+        args->set_op(runner);
       } else {
-        this->WriteError("Error parsing Mode ", args.sequence());
+        this->WriteError("Error parsing Mode ", args->sequence());
       }
     } break;
     case 'D':  // DELAY
     {
-      DelayParser parser(this->writer());
+      DelayParser parser(this->writer(), new Delay());
       parser.Parse(command);
       if (parser.ok()) {
         auto delayArgs = parser.args();
-        auto runner = new DelayRunner(&delayArgs);
-        args.set_op(runner);
+        auto runner = new DelayRunner(delayArgs);
+        args->set_op(runner);
       } else {
-        this->WriteError("Error parsing Delay ", args.sequence());
+        this->WriteError("Error parsing Delay ", args->sequence());
       }
     } break;
     case 'P':  // PIN I/O
     {
-      PinParser parser(this->writer());
+      PinParser parser(this->writer(), new Pin());
       parser.Parse(command);
       if (parser.ok()) {
         auto pinArgs = parser.args();
-        auto runner = new PinRunner(&pinArgs);
-        args.set_op(runner);
+        auto runner = new PinRunner(pinArgs);
+        args->set_op(runner);
       } else {
-        this->WriteError("Error parsing Pin ", args.sequence());
+        this->WriteError("Error parsing Pin ", args->sequence());
       }
     } break;
     default:

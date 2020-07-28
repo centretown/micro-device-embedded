@@ -27,16 +27,16 @@ void ModeParser::Parse(const JsonObject &obj) {
 
   auto args = this->args();
 
-  args.set_mode(*mode);
-  args.set_signal(*signal);
-  args.set_pin(pin);
+  args->set_mode(*mode);
+  args->set_signal(*signal);
+  args->set_pin(pin);
 
-  if (args.signal() != 'd' && args.signal() != 'a')
+  if (args->signal() != 'd' && args->signal() != 'a')
     this->WriteError("Signal must be analog or digital");
 
-  if (args.mode() != 'o' && args.mode() != 'i')
+  if (args->mode() != 'o' && args->mode() != 'i')
     this->WriteError("Mode must input or output");
 
-  if (args.mode() == 'o' && args.signal() != 'd')
+  if (args->mode() == 'o' && args->signal() != 'd')
     this->WriteError("Output to digital only");
 }

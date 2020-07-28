@@ -35,7 +35,7 @@
             "sequence": 2,
             "type": "PIN",
             "command": {
-                "id": 3,
+                "id": 2,
                 "signal": "digital",
                 "mode": "output",
                 "value": 0

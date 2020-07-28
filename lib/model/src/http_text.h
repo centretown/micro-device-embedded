@@ -12,7 +12,11 @@ class HttpText {
   inline const char* version() { return this->version_; }
   inline const char* method() { return this->method_; }
   inline const char* body() { return this->body_; }
+  const size_t MaxLineLength =
+      sizeof(path_) + sizeof(version_) + sizeof(method_);
 
-  char path_[100], version_[16], method_[8];
-  const char* body_;
+  char path_[100] = {0};
+  char version_[16] = {0};
+  char method_[8] = {0};
+  const char* body_ = NULL;
 };

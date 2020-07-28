@@ -1,31 +1,29 @@
 // Copyright 2020, Dave Marsh, Centretown
 // All rights reserved. see LICENSE.TXT
 
-#if defined(ARDUINO)
-// Import required libraries
+#if !defined(ARDUINO)
+#include "native_main.h"  // NOLINT
+#else
 #include <Arduino.h>
 #include <WiFi.h>
 
-#include "../include/credentials.h"
-
 // must define char *ssid and char *pass)
+#include "../include/credentials.h"
 #include "builder.h"         // NOLINT
 #include "http_parser.h"     // NOLINT
 #include "json_writer.h"     // NOLINT
 #include "process_parser.h"  // NOLINT
 #include "process_runner.h"  // NOLINT
 
-// Create an instance of the server
 WiFiServer server(80);
+void ok(WiFiClient client);
+void showPage(WiFiClient client);
 
 ProcessRunner* processRunner = NULL;
 
 char readBuffer[1024];
 char errBuffer[1024];
 const char* kOverflow = "Read Buffer overflow";
-
-void ok(WiFiClient client);
-void showPage(WiFiClient client);
 
 void setup() {
   // Start Serial
@@ -58,10 +56,10 @@ void loop() {
     return;
   }
 
-  char* msg = NULL;
+  char* msg = "ok";
 
   auto stop = [&client, &msg]() -> void {
-    if (strlen(msg) > 0) client.println(msg);
+    if (msg != NULL && strlen(msg) > 0) Serial.println(msg);
     client.stop();
   };
 
@@ -74,35 +72,33 @@ void loop() {
   // read request
   auto bytesRead = client.readBytes(readBuffer, sizeof(readBuffer));
   if (bytesRead >= sizeof(readBuffer)) {
-    strncpy(errBuffer, kOverflow, sizeof(errBuffer));
-    msg = errBuffer;
-    stop();
+    Serial.println(kOverflow);
+    client.stop();
     return;
   }
   // null terminate
   readBuffer[bytesRead] = '\0';
-
   JsonWriter* writer = new JsonWriter(1024);
 
   // parse http
-  HttpParser* request = BuildHttpParser(readBuffer, writer);
+  HttpText httpText;
+  HttpParser* request = BuildHttpParser(readBuffer, writer, &httpText);
   if (request->ok() == false) {
-    msg = request->ReadError(errBuffer, sizeof(errBuffer));
-    stop();
+    Serial.println(request->ReadError(errBuffer, sizeof(errBuffer)));
+    client.stop();
     return;
   }
 
-  ProcessParser* parser = BuildProcessParser(request->args().body(), writer);
+  Process* process = new Process();
+  ProcessParser* parser =
+      BuildProcessParser(request->args()->body(), writer, process);
   if (parser->ok() == false) {
-    parser->ReadError(errBuffer, sizeof(errBuffer));
-    stop();
+    Serial.println(request->ReadError(errBuffer, sizeof(errBuffer)));
+    client.stop();
     return;
   }
 
   delete processRunner;
-  auto args = parser->args();
-  processRunner = BuildProcessRunner(&args);
+  processRunner = new ProcessRunner(process);
 }
-#else
-int main() {}
-#endif  // ARDUNIO
+#endif                       // ARDUNIO

@@ -12,7 +12,8 @@
 
 class DelayParser : public JsonObjectParser<Delay> {
  public:
-  explicit DelayParser(Writer* writer) : JsonObjectParser(writer) {}
+  explicit DelayParser(Writer* writer, Delay* args)
+      : JsonObjectParser(writer, args) {}
   ~DelayParser() {}
 
   void Parse(const JsonObject& obj) override;

@@ -5,6 +5,8 @@
 
 #if defined(ARDUINO)
 #include <Arduino.h>
+#else
+#include <stdio.h>
 #endif  // ARDUINO
 
 #include "delay.h"   // NOLINT
@@ -17,6 +19,8 @@ class DelayRunner : public Runner<Delay> {
   void Run() override {
 #if defined(ARDUINO)
     delay(args()->duration());
+#else
+    printf("delay(%d);\n", args()->duration());
 #endif  // ARDUINO
   }
 };

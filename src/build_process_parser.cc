@@ -3,23 +3,21 @@
 
 #include "process_parser.h"  // NOLINT
 
-ProcessParser* BuildProcessParser(const char* body, Writer* writer) {
-// ArduinoJson assistant calculates capacity = 924 (ESP32), when parsing test
-// data of length = 686 (single space indentation with line feeds). Doubling
-// the body length should provide an adequate margin for error on ESP32 but
-// may fall short the on native platform "Sizes can be significantly larger on
-// a computer."
+static const size_t kBufferSize = 160;
+
+ProcessParser* BuildProcessParser(const char* body, Writer* writer,
+                                  Process* process) {
 #ifdef ARDUINO
-  size_t multiplier = 2;
-#else
-  size_t multiplier = 3;
+  size_t multiplier = 2;  // 32 bit environment
+#else                     // NATIVE
+  size_t multiplier = 3;  // 64 bit environment
 #endif
-  // from the heap to be safe
+  // "Dynamic" stores on heap
   DynamicJsonDocument doc = DynamicJsonDocument(strlen(body) * multiplier);
-  auto parser = new ProcessParser(writer);
+  auto parser = new ProcessParser(writer, process);
   DeserializationError err = deserializeJson(doc, body);
   if (err) {
-    char buf[80];
+    char buf[kBufferSize];
     snprintf(buf, sizeof(buf), "DeserializeJson error: %s", err.c_str());
     parser->WriteError(buf);
   } else {

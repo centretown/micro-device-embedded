@@ -1,21 +1,20 @@
-// Copyright 2020, Dave Marsh, Centretown
-// All rights reserved. see LICENSE.TXT
+// Copyright 2020 Dave Marsh. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 #include <my_strings.h>
 
-int indexOf(const char* src, const char* find) {
-  auto result = strstr(src, find);
-  if (result > src) {
-    return result - src;
+int indexOf(const char* source, const char* find) {
+  auto result = strstr(source, find);
+  if (result > source) {
+    return result - source;
   }
   return -1;
 }
 
-int indexOf(const char* src, size_t offset, const char* find) {
-  if (offset > strlen(src)) {
+int indexOf(const char* source, size_t offset, const char* find) {
+  if (offset > strlen(source)) {
     return 0;
   }
-  return indexOf(src + offset, find);
+  return indexOf(source + offset, find);
 }
-
-int toInt(const char* src) { return atoi(src); }

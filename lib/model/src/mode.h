@@ -21,7 +21,7 @@ class Mode {
   inline auto set_mode(const char mode) -> void { this->mode_ = mode; }
 
  private:
-  uint8_t pin_;
-  char mode_;
-  char signal_;
+  uint8_t pin_ = 0;
+  char mode_ = ' ';
+  char signal_ = ' ';
 };

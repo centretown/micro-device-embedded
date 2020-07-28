@@ -5,7 +5,9 @@
 
 #if defined(ARDUINO)
 #include <Arduino.h>
-#endif
+#else
+#include <stdio.h>
+#endif  // ARDUINO
 
 #include "pin_parser.h"  // NOLINT
 #include "runner.h"      // NOLINT
@@ -23,6 +25,14 @@ class PinRunner : public Runner<Pin> {
       args()->set_value(analogRead(args()->pin()));
     } else {
       args()->set_value(digitalRead(args()->pin()));
+    }
+#else
+    if (args()->mode() == 'o') {
+      printf("digitalWrite(%d, %d);\n", args()->pin(), args()->value());
+    } else if (args()->signal() == 'a') {
+      printf("args()->set_value(analogRead(%d));\n", args()->pin());
+    } else {
+      printf("args()->set_value(digitalRead(%d));\n", args()->pin());
     }
 #endif  // ARDUINO
   }

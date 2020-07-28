@@ -5,25 +5,26 @@
 #pragma once
 
 #include <ArduinoJson.h>
-
-#include "error_handler.h"  // NOLINT
-#include "writer.h"         // NOLINT
+#include <writer.h>
 
 // parse class "O" to derive class "T"
 template <class T, class O>
 class Parser {
  public:
-  explicit Parser(Writer *writer) {}
+  explicit Parser(Writer *writer, T *args) {
+    this->args_ = args;
+    this->writer_ = writer;
+  }
   virtual ~Parser() {}
 
-  // parse and validate
+  // parse and validatehello world again
   virtual void Parse(const O &o) = 0;
 
   inline Writer *writer() { return this->writer_; }
   inline bool ok() { return this->ok_; }
   inline void clear() { this->ok_ = true; }
 
-  inline T &args() { return *args_; }
+  inline T *args() { return args_; }
   inline void set_args(T *args) { args_ = args; }
 
   void WriteData(const char *message) {
@@ -50,7 +51,7 @@ class Parser {
   }
 
  private:
-  Writer *writer_;
-  bool ok_;
-  T *args_;
+  Writer *writer_ = NULL;
+  bool ok_ = true;
+  T *args_ = NULL;
 };

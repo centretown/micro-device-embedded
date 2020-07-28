@@ -2,9 +2,8 @@
 // All rights reserved. see LICENSE.TXT
 
 #pragma once
-#include <ArduinoJson.h>
 
-#include "op.h"  // NOLINT
+#include <op.h>  // NOLINT
 
 // create a runnable class derived from model T
 template <class T>

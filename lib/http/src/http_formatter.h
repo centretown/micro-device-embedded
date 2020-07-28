@@ -3,11 +3,10 @@
 
 #pragma once
 
-#include "error_handler.h"  // NOLINT
-#include "json_writer.h"    // NOLINT
-class HttpFormatter : public ErrorHandler {
+#include "json_writer.h"  // NOLINT
+class HttpFormatter {
  public:
-  explicit HttpFormatter(JsonWriter* writer) : ErrorHandler(writer) {}
+  explicit HttpFormatter(JsonWriter* writer) {}
   ~HttpFormatter() {}
 
   inline const char* ok() { return this->ok_; }

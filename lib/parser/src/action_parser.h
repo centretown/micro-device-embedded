@@ -4,16 +4,17 @@
 
 #pragma once
 
-#include "action.h"              // NOLINT
+#include <action.h>
+
 #include "json_object_parser.h"  // NOLINT
 #include "parser.h"              // NOLINT
 #include "writer.h"              // NOLINT
 
 class ActionParser : public JsonObjectParser<Action> {
  public:
-  explicit ActionParser(Writer* writer) : JsonObjectParser<Action>(writer) {}
+  explicit ActionParser(Writer* writer, Action* args)
+      : JsonObjectParser<Action>(writer, args) {}
   ~ActionParser() {}
 
-  // command overrides
   void Parse(const JsonObject& obj) override;
 };

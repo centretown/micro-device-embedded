@@ -11,8 +11,9 @@
 
 class PinParser : public JsonObjectParser<Pin> {
  public:
-  explicit PinParser(Writer* writer) : JsonObjectParser(writer) {
-    mode_parser_ = new ModeParser(writer);
+  explicit PinParser(Writer* writer, Pin* args)
+      : JsonObjectParser(writer, args) {
+    mode_parser_ = new ModeParser(writer, args);
   }
   ~PinParser() { delete mode_parser_; }
 

@@ -15,5 +15,5 @@ class Pin : public Mode {
   inline auto set_value(int value) -> void { value_ = value; }
 
  private:
-  int value_;
+  int value_ = 0;
 };

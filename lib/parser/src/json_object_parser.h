@@ -12,6 +12,7 @@
 template <class T>
 class JsonObjectParser : public Parser<T, JsonObject> {
  public:
-  explicit JsonObjectParser(Writer* writer) : Parser<T, JsonObject>(writer) {}
+  explicit JsonObjectParser(Writer* writer, T* args)
+      : Parser<T, JsonObject>(writer, args) {}
   ~JsonObjectParser() {}
 };

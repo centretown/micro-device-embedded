@@ -2,10 +2,12 @@
 // All rights reserved. see LICENSE.TXT
 
 #include "http_parser.h"  // NOLINT
-#include "writer.h"
+#include "http_text.h"    // NOLINT
+#include "writer.h"       // NOLINT
 
-HttpParser* BuildHttpParser(char* httpRequest, Writer* writer) {
-  HttpParser* parser = new HttpParser(writer);
+HttpParser* BuildHttpParser(char* httpRequest, Writer* writer,
+                            HttpText* httpText) {
+  HttpParser* parser = new HttpParser(writer, httpText);
   Text text(httpRequest);
   parser->Parse(text);
   return parser;

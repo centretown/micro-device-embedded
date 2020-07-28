@@ -11,7 +11,8 @@
 
 class ModeParser : public JsonObjectParser<Mode> {
  public:
-  explicit ModeParser(Writer* writer) : JsonObjectParser(writer) {}
+  explicit ModeParser(Writer* writer, Mode* args)
+      : JsonObjectParser(writer, args) {}
   ~ModeParser() {}
 
   void Parse(const JsonObject& doc) override;

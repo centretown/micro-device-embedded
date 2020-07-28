@@ -9,5 +9,5 @@ void DelayParser::Parse(const JsonObject& obj) {
     this->WriteError("Duration missing");
     return;
   }
-  this->args().set_duration(obj["duration"]);
+  this->args()->set_duration(obj["duration"]);
 }

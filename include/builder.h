@@ -2,11 +2,11 @@
 // All rights reserved. see LICENSE.TXT
 
 #pragma once
+#include <http_parser.h>
+#include <http_text.h>
+#include <process_parser.h>
 
-#include "http_parser.h"     // NOLINT
-#include "process_parser.h"  // NOLINT
-#include "process_runner.h"  // NOLINT
-
-HttpParser* BuildHttpParser(char* httpRequest, Writer* writer);
-ProcessParser* BuildProcessParser(const char* body, Writer* writer);
-ProcessRunner* BuildProcessRunner(Process* process);
+HttpParser* BuildHttpParser(char* httpRequest, Writer* writer,
+                            HttpText* httpText);
+ProcessParser* BuildProcessParser(const char* body, Writer* writer,
+                                  Process* process);

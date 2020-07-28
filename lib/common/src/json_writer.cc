@@ -1,7 +1,8 @@
 // Copyright 2020, Dave Marsh, Centretown
 // All rights reserved. see LICENSE.TXT
 
-#include "json_writer.h"  // NOLINT
+#include <json_writer.h>
+#include <my_strings.h>
 
 JsonWriter::JsonWriter(size_t size) : Writer() {
   this->doc_ = new DynamicJsonDocument(size);
@@ -27,20 +28,20 @@ void JsonWriter::WriteError(const char *message) {
 }
 
 void JsonWriter::WriteError(const char *message, int num) {
-  char buf[80];
+  char buf[160];
   snprintf(buf, sizeof(buf), "%s %d", message, num);
   this->WriteError(buf);
 }
 
 void JsonWriter::WriteError(const char *prefix, const char *suffix) {
-  char buf[160];
+  char buf[256];
   snprintf(buf, sizeof(buf), "%s %s", prefix, suffix);
   this->WriteError(buf);
 }
 
 char *JsonWriter::ReadData(char *output, size_t outputSize) {
   if (this->data_.isNull())
-    strncpy(output, "no data", outputSize);
+    copyString(output, "no data", outputSize);
   else
     serializeJson(this->data_, output, outputSize);
   return output;
@@ -48,7 +49,7 @@ char *JsonWriter::ReadData(char *output, size_t outputSize) {
 
 char *JsonWriter::ReadError(char *output, size_t outputSize) {
   if (this->errors_.isNull())
-    strncpy(output, "no data", outputSize);
+    copyString(output, "no data", outputSize);
   else
     serializeJson(this->errors_, output, outputSize);
   return output;

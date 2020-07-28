@@ -1,10 +1,11 @@
-// Copyright 2020, Dave Marsh, Centretown
-// All rights reserved. see LICENSE.TXT
+// Copyright 2020 Dave Marsh. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
-#include "http_parser.h"  // NOLINT
-
-#include "http_text.h"   // NOLINT
-#include "my_strings.h"  // NOLINT
+#include <http_parser.h>
+#include <http_text.h>
+#include <my_strings.h>
+#include <stdlib.h>
 
 static const char* kContentLength = "Content-Length: ";
 const char* kPost = "POST";
@@ -16,22 +17,20 @@ void HttpParser::Parse(const Text& text) {
   auto sourceLength = strlen(buffer);
 
   if (sourceLength == 0) {
-    this->WriteError("No Source: ");
+    this->WriteError("No Source:");
     return;
   }
-
   // ensure no overflows, be wary of a long path
   auto len = indexOf(buffer, "\n");
-  if (len < 0 || len > 128) {
-    this->WriteError("Header's first line too long: ", len);
+  if (len < 0 || len > args()->MaxLineLength) {
+    this->WriteError("Header's first line too long:", len);
     return;
   }
-
   auto args = this->args();
 
-  sscanf(buffer, "%s %s %s\n", args.method_, args.path_, args.version_);
-  if (strcmp(kPost, args.method()) != 0) {
-    this->WriteError("Method must be POST: ", args.method());
+  sscanf(buffer, "%s %s %s\n", args->method_, args->path_, args->version_);
+  if (strcmp(kPost, args->method()) != 0) {
+    this->WriteError("Method must be POST:", args->method());
     return;
   }
 
@@ -49,12 +48,14 @@ void HttpParser::Parse(const Text& text) {
   }
 
   char lenBuf[12];
-  strncpy(lenBuf, plenText, numLength);
-  auto contentLength = toInt(lenBuf);
+  copyString(lenBuf, plenText, sizeof(lenBuf));
+  auto contentLength = atoi(lenBuf);
   if (contentLength <= 0) {
     this->WriteError(kContentLength, " requires terminating line feed");
     return;
   }
 
-  args.body_ = buffer + sourceLength - contentLength;
+  args->body_ = buffer + sourceLength - contentLength;
+
+  return;
 }
