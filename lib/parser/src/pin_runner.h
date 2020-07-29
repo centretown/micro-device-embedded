@@ -14,25 +14,26 @@
 
 class PinRunner : public Runner<Pin> {
  public:
-  explicit PinRunner(Pin* args) : Runner<Pin>(args) {}
+  explicit PinRunner(Pin* pin) : Runner<Pin>(pin) {}
   ~PinRunner() {}
 
   void Run() override {
+    auto pin = this->args();
 #if defined(ARDUINO)
-    if (args()->mode() == 'o') {
-      digitalWrite(args()->pin(), args()->value());
-    } else if (args()->signal() == 'a') {
-      args()->set_value(analogRead(args()->pin()));
+    if (pin->mode() == 'o') {
+      digitalWrite(pin->pin(), pin->value());
+    } else if (pin->signal() == 'a') {
+      pin->set_value(analogRead(pin->pin()));
     } else {
-      args()->set_value(digitalRead(args()->pin()));
+      pin->set_value(digitalRead(pin->pin()));
     }
 #else
-    if (args()->mode() == 'o') {
-      printf("digitalWrite(%d, %d);\n", args()->pin(), args()->value());
-    } else if (args()->signal() == 'a') {
-      printf("args()->set_value(analogRead(%d));\n", args()->pin());
+    if (pin->mode() == 'o') {
+      printf("digitalWrite(%d, %d);\n", pin->pin(), pin->value());
+    } else if (pin->signal() == 'a') {
+      printf("pin->set_value(analogRead(%d));\n", pin->pin());
     } else {
-      printf("args()->set_value(digitalRead(%d));\n", args()->pin());
+      printf("pin->set_value(digitalRead(%d));\n", pin->pin());
     }
 #endif  // ARDUINO
   }

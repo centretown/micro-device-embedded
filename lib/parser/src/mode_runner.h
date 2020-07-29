@@ -19,17 +19,18 @@ class ModeRunner : public Runner<Mode> {
   ~ModeRunner() {}
 
   void Run() override {
+    auto mode = this->args();
 #if defined(ARDUINO)
-    if (args()->mode() == 'o') {
-      pinMode(args()->pin(), OUTPUT);
+    if (mode->mode() == 'o') {
+      pinMode(mode->pin(), OUTPUT);
     } else {
-      pinMode(args()->pin(), INPUT);
+      pinMode(mode->pin(), INPUT);
     }
 #else
-    if (args()->mode() == 'o') {
-      printf("pinMode(%d, OUTPUT);\n", args()->pin());
+    if (mode->mode() == 'o') {
+      printf("pinMode(%d, OUTPUT);\n", mode->pin());
     } else {
-      printf("pinMode(%d, INPUT);\n", args()->pin());
+      printf("pinMode(%d, INPUT);\n", mode->pin());
     }
 #endif  // ARDUINO
   }

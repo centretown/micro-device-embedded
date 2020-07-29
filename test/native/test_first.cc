@@ -1,37 +1,88 @@
-// Copyright 2020, Dave Marsh, Centretown
-// All rights reserved. see LICENSE.TXT
+// Copyright 2020 Dave Marsh. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
+#include <builder.h>
+#include <delay_runner.h>
+#include <http_parser.h>
+#include <json_writer.h>
+#include <mode_runner.h>
+#include <pin_runner.h>
+#include <process.h>
+#include <process_parser.h>
+#include <process_runner.h>
+#include <process_test_data.h>
 #include <stdio.h>
+#include <text.h>
 #include <unity.h>
-
-#include "http_parser.h"        // NOLINT
-#include "json_writer.h"        // NOLINT
-#include "process_test_data.h"  // NOLINT
-#include "text.h"               // NOLINT
 
 char readBuffer[4096];
 char errBuffer[2048];
 
-static const char expected_bad_method[] =
-    R"~~([{"message":"Method must be POST: GET"}])~~";
 void test_good_process(void) {
   JsonWriter writer(1024);
+
   HttpText httpText;
-  HttpParser parser(&writer, &httpText);
-  Text text(http_test_data);
-  parser.Parse(text);
-  if (parser.ok()) {
-    auto args = parser.args();
-    // POST /process/replace HTTP/1.1
-    TEST_ASSERT_EQUAL_STRING("POST", args->method());
-    TEST_ASSERT_EQUAL_STRING("/process/replace", args->path());
-    TEST_ASSERT_EQUAL_STRING("HTTP/1.1", args->version());
-    // Content-Length: 688
-    TEST_ASSERT_EQUAL(688, strlen(args->body()));
-    // PrintError(&parser);
-  }
+  HttpParser* httpParser = BuildHttpParser(http_test_data, &writer, &httpText);
+  TEST_ASSERT(true == httpParser->ok());
+  auto args = httpParser->args();
+  TEST_ASSERT_EQUAL_STRING("POST", args->method());
+  TEST_ASSERT_EQUAL_STRING("/process/replace", args->path());
+  TEST_ASSERT_EQUAL_STRING("HTTP/1.1", args->version());
+  TEST_ASSERT_EQUAL(688, strlen(args->body()));
+  delete httpParser;
+
+  Process* process = new Process();
+  ProcessParser* processParser =
+      BuildProcessParser(httpText.body(), &writer, process);
+  TEST_ASSERT(true == processParser->ok());
+  TEST_ASSERT_EQUAL_STRING("Process 1", process->label());
+  TEST_ASSERT_EQUAL_STRING("esp32-200", process->deviceKey());
+  TEST_ASSERT_EQUAL_STRING("Blink", process->purpose());
+  delete processParser;
+
+  TEST_ASSERT_EQUAL_UINT(1, process->setup_length());
+  auto setup = process->setup();
+
+  ModeRunner* mr = reinterpret_cast<ModeRunner*>(setup[0]);
+  auto mode = mr->args();
+  TEST_ASSERT_EQUAL_INT(2, mode->pin());
+  TEST_ASSERT_EQUAL_CHAR('o', mode->mode());
+  TEST_ASSERT_EQUAL_CHAR('d', mode->signal());
+
+  TEST_ASSERT_EQUAL_UINT(4, process->loop_length());
+  auto loop = process->loop();
+
+  PinRunner* pr = reinterpret_cast<PinRunner*>(loop[0]);
+  auto pin = pr->args();
+  TEST_ASSERT_EQUAL_INT(2, pin->pin());
+  TEST_ASSERT_EQUAL_CHAR('o', pin->mode());
+  TEST_ASSERT_EQUAL_CHAR('d', pin->signal());
+  TEST_ASSERT_EQUAL_INT(1, pin->value());
+
+  DelayRunner* dr = reinterpret_cast<DelayRunner*>(loop[1]);
+  auto delay = dr->args();
+  TEST_ASSERT_EQUAL_INT(200, delay->duration());
+
+  pr = reinterpret_cast<PinRunner*>(loop[2]);
+  pin = pr->args();
+  TEST_ASSERT_EQUAL_INT(2, pin->pin());
+  TEST_ASSERT_EQUAL_CHAR('o', pin->mode());
+  TEST_ASSERT_EQUAL_CHAR('d', pin->signal());
+  TEST_ASSERT_EQUAL_INT(0, pin->value());
+
+  dr = reinterpret_cast<DelayRunner*>(loop[3]);
+  delay = dr->args();
+  TEST_ASSERT_EQUAL_INT(500, delay->duration());
+
+  ProcessRunner* processRunner = new ProcessRunner(process);
+  processRunner->Run();
+  delete processRunner;
+  delete process;
 }
 
+static const char expected_bad_method[] =
+    R"~~([{"message":"Method must be POST: GET"}])~~";
 void test_bad_method(void) {
   JsonWriter writer(1024);
   HttpText httpText;
@@ -39,7 +90,8 @@ void test_bad_method(void) {
   Text text(http_bad_method);
   parser.Parse(text);
   TEST_ASSERT(false == parser.ok());
-  printf("%s\n", writer.ReadError(errBuffer, sizeof(errBuffer)));
+  writer.ReadError(errBuffer, sizeof(errBuffer));
+  printf("%s\n", errBuffer);
   TEST_ASSERT(0 == strcmp(expected_bad_method, errBuffer))
 }
 

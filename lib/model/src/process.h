@@ -10,7 +10,10 @@
 class Process {
  public:
   Process() {}
-  ~Process() {}
+  ~Process() {
+    delete[] setup_;
+    delete[] loop_;
+  }
 
   inline char* label() { return this->label_; }
   inline void set_label(const char* label) {
