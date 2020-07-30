@@ -4,7 +4,8 @@
 
 #include <process_runner.h>
 
-ProcessRunner::ProcessRunner(Process* process) : Runner(process) {}
+ProcessRunner::ProcessRunner(Process* process, Writer* writer)
+    : Runner(process, writer) {}
 
 void ProcessRunner::Run() {
   auto process = this->args();

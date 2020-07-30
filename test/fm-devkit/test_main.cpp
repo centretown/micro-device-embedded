@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <builder.h>
 #include <delay_runner.h>
+#include <hall_runner.h>
 #include <http_parser.h>
 #include <json_writer.h>
 #include <mode_runner.h>
@@ -32,7 +33,7 @@ void setup() {
   TEST_ASSERT_EQUAL_STRING("POST", args->method());
   TEST_ASSERT_EQUAL_STRING("/process/replace", args->path());
   TEST_ASSERT_EQUAL_STRING("HTTP/1.1", args->version());
-  TEST_ASSERT_EQUAL(688, strlen(args->body()));
+  TEST_ASSERT_EQUAL(753, strlen(args->body()));
   delete httpParser;
 
   Process* replaceProcess = new Process();
@@ -53,7 +54,7 @@ void setup() {
   TEST_ASSERT_EQUAL_CHAR('o', mode->mode());
   TEST_ASSERT_EQUAL_CHAR('d', mode->signal());
 
-  TEST_ASSERT_EQUAL_UINT(4, process->loop_length());
+  TEST_ASSERT_EQUAL_UINT(5, process->loop_length());
   auto loop = process->loop();
 
   PinRunner* pr = reinterpret_cast<PinRunner*>(loop[0]);
@@ -77,6 +78,9 @@ void setup() {
   dr = reinterpret_cast<DelayRunner*>(loop[3]);
   delay = dr->args();
   TEST_ASSERT_EQUAL_INT(500, delay->duration());
+
+  HallRunner* hr = reinterpret_cast<HallRunner*>(loop[4]);
+  TEST_ASSERT(NULL != hr);
 
   delete process;
   process = replaceProcess;

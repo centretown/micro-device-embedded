@@ -16,10 +16,10 @@ ProcessParser* BuildProcessParser(const char* body, Writer* writer,
   DynamicJsonDocument doc = DynamicJsonDocument(strlen(body) * multiplier);
   auto parser = new ProcessParser(writer, process);
   DeserializationError err = deserializeJson(doc, body);
+
   if (err) {
-    char buf[kBufferSize];
-    snprintf(buf, sizeof(buf), "DeserializeJson error: %s", err.c_str());
-    parser->WriteError(buf);
+    printf("%s\n", err.c_str());
+    parser->writer()->Write("DeserializeJson error", err.c_str());
   } else {
     parser->Parse(doc.as<JsonObject>());
   }

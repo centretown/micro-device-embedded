@@ -15,7 +15,8 @@
 
 class ModeRunner : public Runner<Mode> {
  public:
-  explicit ModeRunner(Mode* mode) : Runner<Mode>(mode) {}
+  explicit ModeRunner(Mode* mode, Writer* writer)
+      : Runner<Mode>(mode, writer) {}
   ~ModeRunner() {}
 
   void Run() override {

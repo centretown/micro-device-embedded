@@ -8,7 +8,7 @@
 
 class ProcessRunner : public Runner<Process> {
  public:
-  explicit ProcessRunner(Process* process);
+  explicit ProcessRunner(Process* process, Writer* writer);
   ~ProcessRunner() {}
 
   void Run() override;

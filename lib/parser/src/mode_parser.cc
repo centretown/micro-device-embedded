@@ -2,26 +2,27 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-#include "mode_parser.h"  // NOLINT
+#include <mode_parser.h>
 
 const int maxPins = 16;
 
 void ModeParser::Parse(const JsonObject &obj) {
+  Writer *writer = this->writer();
   const char *mode = obj["mode"];
-  if (strlen(mode) == 0) this->WriteError("Mode missing");
+  if (strlen(mode) == 0) writer->Write("Mode missing");
 
   const char *signal = obj["signal"];
-  if (strlen(signal) == 0) this->WriteError("Signal missing");
+  if (strlen(signal) == 0) writer->Write("Signal missing");
 
   if (obj["id"].isNull() == true) {
-    this->WriteError("Pin id missing");
+    writer->Write("Pin id missing");
   }
 
   if (this->ok() == false) return;
 
   uint8_t pin = obj["id"];
   if (pin < 0 || pin >= maxPins) {
-    this->WriteError("Pin id out of range");
+    writer->Write("Pin id out of range");
     return;
   }
 
@@ -32,11 +33,11 @@ void ModeParser::Parse(const JsonObject &obj) {
   args->set_pin(pin);
 
   if (args->signal() != 'd' && args->signal() != 'a')
-    this->WriteError("Signal must be analog or digital");
+    writer->Write("Signal must be analog or digital");
 
   if (args->mode() != 'o' && args->mode() != 'i')
-    this->WriteError("Mode must input or output");
+    writer->Write("Mode must input or output");
 
   if (args->mode() == 'o' && args->signal() != 'd')
-    this->WriteError("Output to digital only");
+    writer->Write("Output to digital only");
 }

@@ -1,5 +1,6 @@
-// Copyright 2020, Dave Marsh, Centretown
-// All rights reserved. see LICENSE.TXT
+// Copyright 2020 Dave Marsh. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
 #if !defined(ARDUINO)
 #include "native_main.h"  // NOLINT
@@ -18,15 +19,14 @@
 #include "../include/process_test_data.h"
 
 WiFiServer server(80);
-void ok(WiFiClient client);
-void showPage(WiFiClient client);
-void createProcess(char* readBuffer);
+ProcessRunner* buildProcess(char* readBuffer, Writer* writer);
 
 ProcessRunner* processRunner = NULL;
 Process* process = NULL;
 
 char readBuffer[4096];
 char errBuffer[1024];
+
 const char* kOverflow = "Read Buffer overflow";
 
 void setup() {
@@ -49,7 +49,14 @@ void setup() {
   // Indicate the IP address
   Serial.println(WiFi.localIP());
 
-  createProcess(http_test_data);
+  // start blink as default
+  JsonWriter writer(1024);
+  processRunner = buildProcess(http_test_data, &writer);
+  if (processRunner == NULL) {
+    Serial.println(writer.Read(errBuffer, sizeof(errBuffer)));
+  } else {
+    process = processRunner->args();
+  }
 }
 
 void loop() {
@@ -77,36 +84,17 @@ void loop() {
   }
   // null terminate
   readBuffer[bytesRead] = '\0';
-  createProcess(readBuffer);
+  JsonWriter writer(1024);
+  ProcessRunner* replaceRunner = buildProcess(readBuffer, &writer);
+  if (replaceRunner == NULL) {
+    Serial.println(writer.Read(errBuffer, sizeof(errBuffer)));
+  } else {
+    delete processRunner;
+    delete process;
+    processRunner = replaceRunner;
+    process = processRunner->args();
+  }
   client.stop();
 }
 
-void createProcess(char* readBuffer) {
-  JsonWriter writer(1024);
-
-  // parse http
-  HttpText httpText;
-  HttpParser* httpParser = BuildHttpParser(readBuffer, &writer, &httpText);
-  if (httpParser->ok() == false) {
-    Serial.println(httpParser->ReadError(errBuffer, sizeof(errBuffer)));
-    delete httpParser;
-    return;
-  }
-  delete httpParser;
-
-  Process* replaceProcess = new Process();
-  ProcessParser* processParser =
-      BuildProcessParser(httpText.body(), &writer, replaceProcess);
-  if (processParser->ok() == false) {
-    Serial.println(httpParser->ReadError(errBuffer, sizeof(errBuffer)));
-    delete processParser;
-    return;
-  }
-
-  delete processParser;
-  delete process;
-  delete processRunner;
-  process = replaceProcess;
-  processRunner = new ProcessRunner(process);
-}
 #endif  // ARDUNIO

@@ -14,7 +14,7 @@
 
 class PinRunner : public Runner<Pin> {
  public:
-  explicit PinRunner(Pin* pin) : Runner<Pin>(pin) {}
+  explicit PinRunner(Pin* pin, Writer* writer) : Runner<Pin>(pin, writer) {}
   ~PinRunner() {}
 
   void Run() override {

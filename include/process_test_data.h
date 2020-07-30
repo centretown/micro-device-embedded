@@ -18,7 +18,7 @@ Keep-Alive: 300
 Connection: keep-alive
 Referer: http://localhost/test.php
 Content-Type: application/x-www-form-urlencoded
-Content-Length: 688
+Content-Length: 778
  
 {
  "label": "Process 1",
@@ -68,6 +68,13 @@ Content-Length: 688
    "type": "DELAY",
    "command": {
     "duration": 500
+   }
+  },
+  {
+   "sequence": 4,
+   "type": "HALL",
+   "command": {
+    "measurement": 500
    }
   }
  ]

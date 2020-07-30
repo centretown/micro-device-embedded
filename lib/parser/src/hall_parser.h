@@ -5,15 +5,16 @@
 #pragma once
 
 #include <ArduinoJson.h>
-#include <delay.h>
+#include <hall.h>
 #include <json_object_parser.h>
 #include <writer.h>
-
-class DelayParser : public JsonObjectParser<Delay> {
+class HallParser : public JsonObjectParser<Hall> {
  public:
-  explicit DelayParser(Writer* writer, Delay* args)
+  explicit HallParser(Writer* writer, Hall* args)
       : JsonObjectParser(writer, args) {}
-  ~DelayParser() {}
+  ~HallParser() {}
 
-  void Parse(const JsonObject& obj) override;
+  void Parse(const JsonObject& obj) override {
+    this->args()->set_measurement(obj["measurement"]);
+  }
 };

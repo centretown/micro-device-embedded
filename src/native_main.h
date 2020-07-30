@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <builder.h>
+#include <build_process.h>
 #include <http_parser.h>
 #include <json_writer.h>
 #include <process_parser.h>
@@ -13,37 +13,35 @@
 #include <stdio.h>
 
 ProcessRunner* processRunner = NULL;
+Process* process = NULL;
 
 char readBuffer[4096];
 char errBuffer[2048];
 const char* kOverflow = "Read Buffer overflow";
 
 int main(int argc, char* argv[]) {
+  // start blink as default
   JsonWriter* writer = new JsonWriter(1024);
-
-  // parse http
-  HttpText httpText;
-  HttpParser* request = BuildHttpParser(http_test_data, writer, &httpText);
-  if (request->ok() == false) {
-    printf("%s\n", request->ReadError(errBuffer, sizeof(errBuffer)));
-    return 0;
+  processRunner = buildProcess(http_bad_method, writer);
+  if (processRunner == NULL) {
+    printf("%s\n", writer->Read(errBuffer, sizeof(errBuffer)));
+  } else {
+    process = processRunner->args();
+    processRunner->Run();
   }
 
-  printf("%s\n%s\n%s %s %s\n", "http parsed...", httpText.body(),
-         httpText.method(), httpText.path(), httpText.version());
-  // return 0;
-
-  Process* process = new Process();
-  ProcessParser* parser = BuildProcessParser(httpText.body(), writer, process);
-  if (parser->ok() == false) {
-    printf("%s\n", request->ReadError(errBuffer, sizeof(errBuffer)));
-    return 0;
+  delete writer;
+  writer = new JsonWriter(1024);
+  processRunner = buildProcess(http_test_data, writer);
+  if (processRunner == NULL) {
+    printf("%s\n", writer->Read(errBuffer, sizeof(errBuffer)));
+  } else {
+    process = processRunner->args();
+    processRunner->Run();
   }
-  printf("%s", "process parsed...\n");
 
+  delete writer;
   delete processRunner;
-  processRunner = new ProcessRunner(process);
-  printf("%s\n", "process runner built...\n");
-  processRunner->Run();
+  delete process;
   return 0;
 }

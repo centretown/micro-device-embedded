@@ -26,15 +26,19 @@ void test_good_process(void) {
   HttpParser* httpParser = BuildHttpParser(http_test_data, &writer, &httpText);
   TEST_ASSERT(true == httpParser->ok());
   auto args = httpParser->args();
-  TEST_ASSERT_EQUAL_STRING("POST", args->method());
-  TEST_ASSERT_EQUAL_STRING("/process/replace", args->path());
-  TEST_ASSERT_EQUAL_STRING("HTTP/1.1", args->version());
-  TEST_ASSERT_EQUAL(688, strlen(args->body()));
+  TEST_ASSERT_EQUAL_PTR(&httpText, args);
+  TEST_ASSERT_EQUAL_STRING("POST", httpText.method());
+  TEST_ASSERT_EQUAL_STRING("/process/replace", httpText.path());
+  TEST_ASSERT_EQUAL_STRING("HTTP/1.1", httpText.version());
+  TEST_ASSERT_EQUAL(778, strlen(httpText.body()));
+  printf("body length: %lu\n", strlen(httpText.body()));
+
   delete httpParser;
 
   Process* process = new Process();
   ProcessParser* processParser =
       BuildProcessParser(httpText.body(), &writer, process);
+
   TEST_ASSERT(true == processParser->ok());
   TEST_ASSERT_EQUAL_STRING("Process 1", process->label());
   TEST_ASSERT_EQUAL_STRING("esp32-200", process->deviceKey());
@@ -50,7 +54,7 @@ void test_good_process(void) {
   TEST_ASSERT_EQUAL_CHAR('o', mode->mode());
   TEST_ASSERT_EQUAL_CHAR('d', mode->signal());
 
-  TEST_ASSERT_EQUAL_UINT(4, process->loop_length());
+  TEST_ASSERT_EQUAL_UINT(5, process->loop_length());
   auto loop = process->loop();
 
   PinRunner* pr = reinterpret_cast<PinRunner*>(loop[0]);
@@ -75,14 +79,14 @@ void test_good_process(void) {
   delay = dr->args();
   TEST_ASSERT_EQUAL_INT(500, delay->duration());
 
-  ProcessRunner* processRunner = new ProcessRunner(process);
-  processRunner->Run();
+  ProcessRunner* processRunner = new ProcessRunner(process, &writer);
+  for (auto i = 0; i < 3; ++i) processRunner->Run();
   delete processRunner;
   delete process;
 }
 
 static const char expected_bad_method[] =
-    R"~~([{"message":"Method must be POST: GET"}])~~";
+    R"~~([{"result":"Method must be POST: GET"}])~~";
 void test_bad_method(void) {
   JsonWriter writer(1024);
   HttpText httpText;
@@ -90,7 +94,7 @@ void test_bad_method(void) {
   Text text(http_bad_method);
   parser.Parse(text);
   TEST_ASSERT(false == parser.ok());
-  writer.ReadError(errBuffer, sizeof(errBuffer));
+  writer.Read(errBuffer, sizeof(errBuffer));
   printf("%s\n", errBuffer);
   TEST_ASSERT(0 == strcmp(expected_bad_method, errBuffer))
 }
@@ -98,12 +102,12 @@ void test_bad_method(void) {
 void test_json_writer(void) {
   JsonWriter writer(1024);
 
-  writer.WriteError("hello world");
-  writer.WriteError("you made a mistake");
-  printf("%s\n", writer.ReadError(errBuffer, sizeof(errBuffer)));
+  writer.Write("hello world");
+  writer.Write("you made a mistake");
+  printf("%s\n", writer.Read(errBuffer, sizeof(errBuffer)));
 
-  writer.WriteData("this is good.");
-  printf("%s\n", writer.ReadData(errBuffer, sizeof(errBuffer)));
+  writer.Write("this is good.");
+  printf("%s\n", writer.Read(errBuffer, sizeof(errBuffer)));
 }
 
 int main() {

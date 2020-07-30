@@ -31,7 +31,7 @@ Op** ProcessParser::ParseOps(const JsonArray& arr, size_t length) {
       parser.clear();
       parser.Parse(arr[i].as<JsonObject>());
       if (!parser.ok()) {
-        this->WriteError("Error parsing action: ", i);
+        this->writer()->Write("Error parsing action:", i);
       } else {
         ops[i] = parser.args()->op();
       }

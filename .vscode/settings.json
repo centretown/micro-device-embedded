@@ -17,7 +17,8 @@
         "unordered_set": "cpp",
         "vector": "cpp",
         "initializer_list": "cpp",
-        "cstring": "cpp"
+        "cstring": "cpp",
+        "typeinfo": "cpp"
     },
     "C_Cpp.errorSquiggles": "Enabled"
 }

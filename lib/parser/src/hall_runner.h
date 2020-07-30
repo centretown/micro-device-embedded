@@ -10,19 +10,21 @@
 #include <stdio.h>
 #endif  // ARDUINO
 
-#include <delay.h>
+#include <hall.h>
 #include <runner.h>
 
-class DelayRunner : public Runner<Delay> {
+class HallRunner : public Runner<Hall> {
  public:
-  explicit DelayRunner(Delay* args, Writer* writer) : Runner(args, writer) {}
-  ~DelayRunner() {}
-
+  explicit HallRunner(Hall* hall, Writer* writer) : Runner(hall, writer) {}
+  ~HallRunner() {}
   void Run() override {
+    auto hall = this->args();
 #if defined(ARDUINO)
-    delay(args()->duration());
+    int measurement = hallRead();
+    hall->set_measurement(measurement);
 #else
-    printf("delay(%d);\n", args()->duration());
+    // hall->set_measurement(measurement_);
+    printf("hallRead() = %d;\n", hall->measurement());
 #endif  // ARDUINO
   }
 };

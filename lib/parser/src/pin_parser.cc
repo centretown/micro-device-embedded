@@ -12,6 +12,6 @@ void PinParser::Parse(const JsonObject& obj) {
   auto args = this->args();
   args->set_value(value);
   if (args->value() < 0 || args->value() > 1) {
-    this->WriteError("Value must be 1 or 0");
+    this->writer()->Write("Value must be 1 or 0");
   }
 }

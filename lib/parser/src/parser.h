@@ -7,51 +7,28 @@
 #include <ArduinoJson.h>
 #include <writer.h>
 
-// parse class "O" to derive class "T"
+// derive class "T" by parsing class "O"
 template <class T, class O>
 class Parser {
  public:
   explicit Parser(Writer *writer, T *args) {
     this->args_ = args;
     this->writer_ = writer;
+    this->initial_length_ = writer->Length();
   }
   virtual ~Parser() {}
 
-  // parse and validatehello world again
   virtual void Parse(const O &o) = 0;
 
   inline Writer *writer() { return this->writer_; }
-  inline bool ok() { return this->ok_; }
-  inline void clear() { this->ok_ = true; }
+  inline bool ok() { return this->writer_->Length() == this->initial_length_; }
+  inline void clear() {this->initial_length_ = this->writer_->Length();}
 
   inline T *args() { return args_; }
   inline void set_args(T *args) { args_ = args; }
 
-  void WriteData(const char *message) {
-    this->ok_ = false;
-    this->writer_->WriteData(message);
-  }
-  void WriteError(const char *message) {
-    this->ok_ = false;
-    this->writer_->WriteError(message);
-  }
-  void WriteError(const char *message, const int num) {
-    this->ok_ = false;
-    this->writer_->WriteError(message, num);
-  }
-  void WriteError(const char *suffix, const char *prefix) {
-    this->ok_ = false;
-    this->writer_->WriteError(suffix, prefix);
-  }
-  char *ReadData(char *output, size_t outputSize) {
-    return this->writer_->ReadData(output, outputSize);
-  }
-  char *ReadError(char *output, size_t outputSize) {
-    return this->writer_->ReadError(output, outputSize);
-  }
-
  private:
   Writer *writer_ = NULL;
-  bool ok_ = true;
   T *args_ = NULL;
+  size_t initial_length_ = 0;
 };
