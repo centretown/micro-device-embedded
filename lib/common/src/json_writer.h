@@ -15,9 +15,9 @@ class JsonWriter : public Writer {
   ~JsonWriter();
 
   void Write(const char *value) override;
-  void Write(int value);
-  void Write(const char *message, int value);
-  void Write(const char *message, const char *value);
+  void Write(int value) override;
+  void Write(const char *message, int value) override;
+  void Write(const char *message, const char *value) override;
   char *Read(char *output, size_t length) override;
   size_t Length() override { return this->array_.size(); }
 

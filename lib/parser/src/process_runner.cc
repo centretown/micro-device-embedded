@@ -16,7 +16,7 @@ void ProcessRunner::Run() {
   this->RunOps(process->loop(), process->loop_length());
 }
 
-void ProcessRunner::RunOps(Op** ops, size_t length) {
+void ProcessRunner::RunOps(Operation** ops, size_t length) {
   for (auto i = 0; i < length; ++i) {
     ops[i]->Run();
   }

@@ -4,13 +4,12 @@
 
 #pragma once
 
-#include <op.h>
+#include <operation.h>
 #include <stdlib.h>
 
 class Action {
  public:
   Action() {}
-  // DO NOT DELETE op it is managed by processRunner
   ~Action() {}
 
   inline int sequence() { return this->sequence_; }
@@ -19,11 +18,13 @@ class Action {
   inline char type() { return this->type_; }
   inline void set_type(char type) { this->type_ = type; }
 
-  inline Op *op() { return this->op_; }
-  inline void set_op(Op *op) { this->op_ = op; }
+  inline Operation *operation() { return this->operation_; }
+  inline void set_operation(Operation *operation) {
+    this->operation_ = operation;
+  }
 
  private:
   int sequence_ = 0;
   char type_ = ' ';
-  Op *op_ = NULL;
+  Operation *operation_ = NULL;
 };

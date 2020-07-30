@@ -5,10 +5,17 @@
 #pragma once
 
 #include <action.h>
-
-#include "json_object_parser.h"  // NOLINT
-#include "parser.h"              // NOLINT
-#include "writer.h"              // NOLINT
+#include <delay_parser.h>
+#include <delay_runner.h>
+#include <hall_parser.h>
+#include <hall_runner.h>
+#include <json_object_parser.h>
+#include <mode_parser.h>
+#include <mode_runner.h>
+#include <parser.h>
+#include <pin_parser.h>
+#include <pin_runner.h>
+#include <writer.h>
 
 class ActionParser : public JsonObjectParser<Action> {
  public:

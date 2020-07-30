@@ -39,8 +39,7 @@ void setup() {
     delay(1);
     Serial.print(".");
   }
-  Serial.println("");
-  Serial.println("WiFi connected");
+  Serial.println("WiFi connected.");
 
   // Start the server
   server.begin();
@@ -75,14 +74,12 @@ void loop() {
 
   Serial.println(client.remoteIP(client.fd()));
 
-  // read request
   auto bytesRead = client.readBytes(readBuffer, sizeof(readBuffer));
   if (bytesRead >= sizeof(readBuffer)) {
     Serial.println(kOverflow);
     client.stop();
     return;
   }
-  // null terminate
   readBuffer[bytesRead] = '\0';
   JsonWriter writer(1024);
   ProcessRunner* replaceRunner = buildProcess(readBuffer, &writer);

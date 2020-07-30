@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include <op.h>
+#include <operation.h>
 #include <writer.h>
 
 // create a runnable class derived from model T
 template <class T>
-class Runner : public Op {
+class Runner : public Operation {
  public:
   explicit Runner(T* args, Writer* writer) {
     this->args_ = args;

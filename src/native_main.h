@@ -21,7 +21,7 @@ const char* kOverflow = "Read Buffer overflow";
 
 int main(int argc, char* argv[]) {
   // start blink as default
-  JsonWriter* writer = new JsonWriter(1024);
+  JsonWriter* writer = new JsonWriter(1024, "errors", "error");
   processRunner = buildProcess(http_bad_method, writer);
   if (processRunner == NULL) {
     printf("%s\n", writer->Read(errBuffer, sizeof(errBuffer)));
@@ -36,6 +36,8 @@ int main(int argc, char* argv[]) {
   if (processRunner == NULL) {
     printf("%s\n", writer->Read(errBuffer, sizeof(errBuffer)));
   } else {
+    writer->set_array_name("results");
+    writer->set_key_name("result");
     process = processRunner->args();
     processRunner->Run();
   }

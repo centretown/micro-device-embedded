@@ -4,9 +4,9 @@
 
 #pragma once
 
-class Op {
+class Operation {
  public:
-  Op() {}
-  virtual ~Op() {}
+  Operation() {}
+  virtual ~Operation() {}
   virtual void Run() = 0;
 };

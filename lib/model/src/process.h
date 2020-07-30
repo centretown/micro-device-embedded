@@ -5,7 +5,7 @@
 #pragma once
 
 #include <my_strings.h>
-#include <op.h>
+#include <operation.h>
 
 class Process {
  public:
@@ -31,13 +31,13 @@ class Process {
     copyString(this->purpose_, purpose, sizeof(this->purpose_));
   }
 
-  inline Op** setup() { return this->setup_; }
-  inline void set_setup(Op** setup) { this->setup_ = setup; }
+  inline Operation** setup() { return this->setup_; }
+  inline void set_setup(Operation** setup) { this->setup_ = setup; }
   inline size_t setup_length() { return this->setup_length_; }
   inline void set_setup_length(size_t length) { this->setup_length_ = length; }
 
-  inline Op** loop() { return this->loop_; }
-  inline void set_loop(Op** loop) { this->loop_ = loop; }
+  inline Operation** loop() { return this->loop_; }
+  inline void set_loop(Operation** loop) { this->loop_ = loop; }
   inline size_t loop_length() { return this->loop_length_; }
   inline void set_loop_length(size_t length) { this->loop_length_ = length; }
 
@@ -47,8 +47,8 @@ class Process {
   char label_[32] = {0};
   char deviceKey_[32] = {0};
   char purpose_[128] = {0};
-  Op** setup_ = NULL;
+  Operation** setup_ = NULL;
   size_t setup_length_ = 0;
-  Op** loop_ = NULL;
+  Operation** loop_ = NULL;
   size_t loop_length_ = 0;
 };

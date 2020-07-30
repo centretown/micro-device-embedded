@@ -3,79 +3,54 @@
 // license that can be found in the LICENSE file.
 
 #include <action_parser.h>
-#include <delay_parser.h>
-#include <delay_runner.h>
-#include <hall_parser.h>
-#include <hall_runner.h>
-#include <mode_parser.h>
-#include <mode_runner.h>
-#include <pin_parser.h>
-#include <pin_runner.h>
-#include <string.h>
+
+template <class Model, class Parser, class Runner>
+Operation* createOperation(Writer* writer, const JsonObject& command,
+                           int sequence) {
+  Parser parser(writer, new Model());
+  parser.Parse(command);
+  if (parser.ok()) {
+    return new Runner(parser.args(), writer);
+  }
+  writer->Write("Error parsing action:", sequence);
+  return NULL;
+}
 
 void ActionParser::Parse(const JsonObject& obj) {
-  auto args = this->args();
+  Action* action = this->args();
   auto writer = this->writer();
-  args->set_sequence(obj["sequence"]);
+  if (obj["sequence"].isNull()) {
+    writer->Write("Sequence number required");
+    return;
+  }
+  action->set_sequence(obj["sequence"]);
   const char* type = obj["type"];
   if (strlen(type) == 0) {
-    writer->Write("Type is required");
+    writer->Write("Action Type required");
     return;
   }
 
   JsonObject command = obj["command"];
-  args->set_type(*type);
-  switch (args->type()) {
-    case 'M':  // MODE
-    {
-      ModeParser parser(this->writer(), new Mode());
-      parser.Parse(command);
-      if (parser.ok()) {
-        auto modeArgs = parser.args();
-        auto runner = new ModeRunner(modeArgs, writer);
-        args->set_op(runner);
-      } else {
-        writer->Write("Error parsing Mode", args->sequence());
-      }
-    } break;
-    case 'D':  // DELAY
-    {
-      DelayParser parser(this->writer(), new Delay());
-      parser.Parse(command);
-      if (parser.ok()) {
-        auto delayArgs = parser.args();
-        auto runner = new DelayRunner(delayArgs, writer);
-        args->set_op(runner);
-      } else {
-        writer->Write("Error parsing Delay", args->sequence());
-      }
-    } break;
-    case 'P':  // PIN I/O
-    {
-      PinParser parser(this->writer(), new Pin());
-      parser.Parse(command);
-      if (parser.ok()) {
-        auto pinArgs = parser.args();
-        auto runner = new PinRunner(pinArgs, writer);
-        args->set_op(runner);
-      } else {
-        writer->Write("Error parsing Pin", args->sequence());
-      }
-    } break;
-    case 'H':  // HALL READER
-    {
-      HallParser parser(this->writer(), new Hall());
-      parser.Parse(command);
-      if (parser.ok()) {
-        auto hallArgs = parser.args();
-        auto runner = new HallRunner(hallArgs, writer);
-        args->set_op(runner);
-      } else {
-        writer->Write("Error parsing Hall", args->sequence());
-      }
-    } break;
+  action->set_type(*type);
+  switch (action->type()) {
+    case 'M':
+      action->set_operation(createOperation<Mode, ModeParser, ModeRunner>(
+          writer, command, action->sequence()));
+      break;
+    case 'D':
+      action->set_operation(createOperation<Delay, DelayParser, DelayRunner>(
+          writer, command, action->sequence()));
+      break;
+    case 'P':
+      action->set_operation(createOperation<Pin, PinParser, PinRunner>(
+          writer, command, action->sequence()));
+      break;
+    case 'H':
+      action->set_operation(createOperation<Hall, HallParser, HallRunner>(
+          writer, command, action->sequence()));
+      break;
     default:
-      writer->Write("Type is unrecognized");
+      writer->Write("Unrecognized type:", action->type());
       return;
   }
 }

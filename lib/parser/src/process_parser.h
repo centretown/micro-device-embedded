@@ -15,5 +15,5 @@ class ProcessParser : public JsonObjectParser<Process> {
   ~ProcessParser() {}
 
   void Parse(const JsonObject& obj) override;
-  Op** ParseOps(const JsonArray& arr, size_t len);
+  Operation** ParseOperations(const JsonArray& arr, size_t len);
 };

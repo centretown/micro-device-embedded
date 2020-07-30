@@ -22,7 +22,7 @@ class Parser {
 
   inline Writer *writer() { return this->writer_; }
   inline bool ok() { return this->writer_->Length() == this->initial_length_; }
-  inline void clear() {this->initial_length_ = this->writer_->Length();}
+  inline void set_ok() { this->initial_length_ = this->writer_->Length(); }
 
   inline T *args() { return args_; }
   inline void set_args(T *args) { args_ = args; }
