@@ -17,14 +17,5 @@ class HallRunner : public Runner<Hall> {
  public:
   explicit HallRunner(Hall* hall, Writer* writer) : Runner(hall, writer) {}
   ~HallRunner() {}
-  void Run() override {
-    auto hall = this->args();
-#if defined(ARDUINO)
-    int measurement = hallRead();
-    hall->set_measurement(measurement);
-#else
-    // hall->set_measurement(measurement_);
-    printf("hallRead() = %d;\n", hall->measurement());
-#endif  // ARDUINO
-  }
+  void Run() override;
 };

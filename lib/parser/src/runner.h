@@ -11,16 +11,13 @@
 template <class T>
 class Runner : public Operation {
  public:
-  explicit Runner(T* args, Writer* writer) {
+  explicit Runner(T* args, Writer* writer) : Operation(writer) {
     this->args_ = args;
-    this->writer_ = writer;
   }
   virtual ~Runner() {}
 
   inline T* args() { return this->args_; }
-  inline Writer* writer() { return this->writer_; }
 
  private:
   T* args_ = NULL;
-  Writer* writer_ = NULL;
 };

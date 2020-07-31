@@ -15,4 +15,5 @@ class ProcessRunner : public Runner<Process> {
 
   void Run() override;
   void RunOps(Operation** ops, size_t length);
+  void set_writer(Writer* writer) override;
 };

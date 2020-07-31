@@ -63,7 +63,10 @@ void loop() {
   WiFiClient client = server.available();
   if (!client) {
     if (processRunner != NULL) {
+      JsonWriter writer(1024, "results", "result");
+      processRunner->set_writer(&writer);
       processRunner->Run();
+      Serial.println(writer.Read(readBuffer, sizeof(readBuffer)));
     }
     return;
   }

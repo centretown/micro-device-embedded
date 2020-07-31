@@ -32,7 +32,7 @@ void JsonWriter::Write(int value) {
 }
 
 void JsonWriter::Write(const char *message, const char *value) {
-  char buffer[256];
+  char buffer[512];
   snprintf(buffer, sizeof(buffer), "%s %s", message, value);
   this->Write(buffer);
 }

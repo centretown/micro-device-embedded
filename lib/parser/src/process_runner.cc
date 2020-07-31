@@ -21,3 +21,16 @@ void ProcessRunner::RunOps(Operation** ops, size_t length) {
     ops[i]->Run();
   }
 }
+
+void ProcessRunner::set_writer(Writer* writer) {
+  Operation::set_writer(writer);
+  Process* process = this->args();
+  Operation** setup = process->setup();
+  for (auto i = 0; i < process->setup_length(); ++i) {
+    setup[i]->set_writer(writer);
+  }
+  Operation** loop = process->loop();
+  for (auto i = 0; i < process->loop_length(); ++i) {
+    loop[i]->set_writer(writer);
+  }
+}

@@ -4,9 +4,16 @@
 
 #pragma once
 
+#include <writer.h>
+
 class Operation {
  public:
-  Operation() {}
+  explicit Operation(Writer* writer) {}
   virtual ~Operation() {}
   virtual void Run() = 0;
+  inline Writer* writer() { return this->writer_; }
+  virtual inline void set_writer(Writer* writer) { this->writer_ = writer; }
+
+ private:
+  Writer* writer_ = NULL;
 };
